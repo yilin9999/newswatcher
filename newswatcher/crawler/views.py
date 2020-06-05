@@ -13,31 +13,32 @@ blueprint = Blueprint('news', __name__)
 def search_news():
     query_list = [
         "台灣蘋果日報",
-        # "中時電子報",
-        # "自由時報",
-        # "UDN 聯合新聞網",
-        # "新頭殼",
-        # "風傳媒",
-        # "端傳媒",
-        # "三立新聞網",
-        # "中央社即時新聞",
-        # "Yahoo奇摩新聞",
-        # "The News Lens 關鍵評論網",
-        # "報導者The Reporter",
-        # "Yahoo奇摩",
-        # "翻爆",
-        # "數位時代",
-        # "經濟日報",
-        # "工商時報",
-        # "更生日報",
-        # "世界日報"
+        "中時電子報",
+        "自由時報",
+        "UDN 聯合新聞網",
+        "新頭殼",
+        "風傳媒",
+        "端傳媒",
+        "三立新聞網",
+        "中央社即時新聞",
+        "Yahoo奇摩新聞",
+        "The News Lens 關鍵評論網",
+        "報導者The Reporter",
+        "Yahoo奇摩",
+        "翻爆",
+        "數位時代",
+        "經濟日報",
+        "工商時報",
+        "更生日報",
+        "世界日報"
     ]
     for query in query_list:
         print("Get news from [{}]".format(query))
-        news_cnt = 0
+        # news_cnt += len(results)
 
-        for i in range(1, 2):
+        for i in range(1, 6):
             print("Get page {}".format(i))
+            news_cnt = NewsDoc.count_doc()
 
             google_news_search = GoogleNewsSearch(query=query, start_date="6/1/2020", result_per_page=50)
             google_news_search.getpage(page=i, delay=2)
@@ -47,14 +48,14 @@ def search_news():
                 break
 
             try:
-                NewsDoc.insert_many(results)
-                news_cnt += len(results)
+                NewsDoc.insert_many(results, ordered=False)
             except pymongo.errors.BulkWriteError as e:
                 logging.info(str(e))
             except Exception as e:
                 logging.error(str(e))
 
-            print("--> find news: {}".format(news_cnt))
+            news_inc = NewsDoc.count_doc() - news_cnt
+            print("--> find news: {}".format(news_inc))
 
     return "OK", 200, {'Content-Type': 'application/json; charset=utf-8'}
 

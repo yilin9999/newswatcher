@@ -20,16 +20,24 @@ class NewsDoc:
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
 
+    # db.news.createIndex({"link":1}, {unique: true})
+    # db.news.createIndex({"title":1}, {unique: true})
+    # db.news.createIndex({"media":1}, {unique: false})
+
     def __repr__(self):
         return '<NewsDoc title:{0}>'.format(self.title)
 
     @classmethod
     def insert_one(self, input_dict):
-        mgdb.db['news3'].insert_one(input_dict)
+        mgdb.db['news'].insert_one(input_dict)
 
     @classmethod
-    def insert_many(self, input_array_dict):
-        mgdb.db['news'].insert_many(input_array_dict)
+    def insert_many(self, input_array_dict, ordered):
+        mgdb.db['news'].insert_many(input_array_dict, ordered=ordered)
+
+    @classmethod
+    def count_doc(self, doc_filter={}):
+        return mgdb.db['news'].count_documents(doc_filter)
 
     # @classmethod
     # def insert_news(self):
