@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  mongo:
+    container_name: mongo4
+    image: mongo:4
+    environment:
+      - MONGO_INITDB_DATABASE=newswatcher
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root5566
+    ports:
+      - '27017:27017'
+    command: mongod --auth
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./volumes/mongo4/db:/data/db
+
+  # elasticsearch:
+  #   container_name: elasticsearch-740
+  #   image: elasticsearch:7.4.0
+  #   environment:
+  #     - node.name=es01
+  #     - cluster.name=es-docker-cluster
+  #     #- discovery.seed_hosts=es02,es03
+  #     - cluster.initial_master_nodes=es01
+  #     - bootstrap.memory_lock=true
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #   ports:
+  #     - "9200:9200"
+  #     - "9300:9300"
+  #   volumes:
+  #     - ./volumes/elasticsearch-740:/usr/share/elasticsearch/data
+  #   networks:
+  #     - esnet
+
+  # kibana:
+  #   image: kibana:7.4.0
+  #   ports:
+  #     - "5601:5601"
+  #   networks:
+  #     - esnet
+  #   depends_on:
+  #     - elasticsearch
+
+  # grafana:
+  #   container_name: grafana-700
+  #   image: grafana/grafana:7.0.0
+  #   ports:
+  #     - "3030:3000"
+  #   volumes:
+  #     - ./volumes/grafana-700/:/var/lib/grafana
+  #   networks:
+  #     - esnet
+
+# networks:
+#   esnet:
+#     driver: bridge
+
