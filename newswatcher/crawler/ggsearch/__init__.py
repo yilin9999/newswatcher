@@ -2,6 +2,7 @@ import requests
 import urllib
 import logging
 import time
+import datetime as dt
 from urllib.parse import quote, quote_plus
 # from urllib.parse import quote
 from bs4 import BeautifulSoup as Soup
@@ -11,7 +12,10 @@ logger = logging.getLogger(__name__)
 
 class GoogleNewsSearch:
 
-    def __init__(self, query="", tbm="nws", start_date=None, end_date=None, lang=None, period=None, result_per_page=20, pages=1):
+    def __init__(self, query="", tbm="nws",
+                 start_date=None,
+                 end_date=dt.datetime.strftime(dt.datetime.now(), '%m/%d/%Y'),
+                 lang=None, period=None, result_per_page=20, pages=1):
         self.query = quote_plus(query)
         self.tbm = tbm
         self.start_date = start_date
@@ -28,25 +32,28 @@ class GoogleNewsSearch:
 
         url_param = {
             "tbm": self.tbm,
-            "cd_min": self.start_date,
-            "cd_max": self.end_date,
             "lang_": self.lang,
             "lang_1": self.lang,
             "qdr": self.period,
             "num": self.result_per_page,
             "start": (self.pages * (page - 1))
         }
+        if self.start_date is not None and \
+           self.end_date is not None:
+            url_param["tbs"] = quote_plus("sbd:1,cdr:1,cd_min:{},cd_max:{}".format(self.start_date, self.end_date))
+
         try:
             url_tmp = "https://www.google.com/search?q={}".format(self.query)
             for k, v in url_param.items():
                 if v is not None:
                     url_tmp += "&{}={}".format(k, v)
+
             self.url = url_tmp
             logger.info(self.url)
         except Exception as e:
             raise e
 
-        # print(self.url)
+        print(self.url)
         try:
             self.req = urllib.request.Request(self.url, headers=self.headers)
             self.response = urllib.request.urlopen(self.req)
@@ -81,6 +88,15 @@ class GoogleNewsSearch:
                 # self.__texts.append(tmp_text)
                 # self.__links.append(tmp_link)
                 self.results.append({'title': tmp_text, 'media': tmp_media,'date': tmp_date,'desc': tmp_desc, 'link': tmp_link,'img': tmp_img})
+
+                if "小時前" in tmp_date:
+                    dt_tmp_date = dt.datetime.strptime(tmp_date, "%H 小時前")
+                    hours_ago = dt_tmp_date.hour
+                    tmp_date = dt.datetime.now() - dt.timedelta(hours=hours_ago)
+                    # print("{} hours ago".format(hours_ago))
+                else:
+                    tmp_date = dt.datetime.strptime(tmp_date, "%Y年%m月%d日")
+                print(tmp_media, tmp_date)
             self.response.close()
         except Exception as e:
             print(e)
