@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  description: NewsGoGoGo
+  version: "3.0"
+  title: Newswatcher
+servers:
+  - url: https://localhost/v1
+paths:
+  /crawler:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GsearchConfig'
+        description: Google search configuration
+        required: true
+      responses:
+        '202':
+          description: Search conguration has been accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GsearchResp'
+  /crawler/{job_uid}:
+    get:
+      parameters:
+        - name: job_uid
+          in: path
+          description: job's unique id
+          required: true
+          schema:
+            type: string
+          example: AAA
+      responses:
+        '200':
+          description: Search finished
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GsearchResult'
+        '202':
+          description: Search Running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GsearchResult'
+components:
+  schemas:
+    GsearchConfig:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          example: "報導者The Reporter"
+        start_date:
+          type: string
+          format: date-time
+          example: '2020-02-29T00:00:00Z'
+        end_date:
+          type: string
+          format: date-time
+          example: '2020-02-29T23:59:59Z'
+    GsearchResp:
+      type: object
+      required:
+        - job_uid
+      properties:
+        job_uid:
+          type: string
+          example: "123123FDSD"
+        created_at:
+          type: string
+          format: date-time
+          example: '2020-02-29T00:00:00Z'
+    GsearchResult:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: 'finished'
+        time_elapsed:
+          type: string
+          example: '312.3'
