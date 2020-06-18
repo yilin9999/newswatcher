@@ -1,40 +1,28 @@
 import logging
 import time
 import pymongo
+import json
 from flask import request, Blueprint
 from .ggsearch import GoogleNewsSearch
 from .models import NewsDoc
+from .serializer import GsearchConfigSchema
 
 logger = logging.getLogger(__name__)
-blueprint = Blueprint('news', __name__)
+blueprint = Blueprint('crawler', __name__)
 
 
-@blueprint.route('/news', methods=('POST',))
-def search_news():
-    query_list = [
-        "ETtoday"
-        # "TVBS新聞",
-        # "台灣蘋果日報",
-        # "中時電子報",
-        # "自由時報",
-        # "UDN 聯合新聞網",
-        # "新頭殼",
-        # "風傳媒",
-        # "端傳媒",
-        # "三立新聞網",
-        # "中央社即時新聞",
-        # "Yahoo奇摩新聞",
-        # "The News Lens 關鍵評論網",
-        # "報導者The Reporter",
-        # "Yahoo奇摩",
-        # "翻爆",
-        # "數位時代",
-        # "經濟日報",
-        # "工商時報",
-        # "更生日報",
-        # "世界日報"
-    ]
-    for query in query_list:
+# @blueprint.route('/news', methods=('POST',))
+@blueprint.route('/crawler', methods=('POST',))
+def crawler_search_news():
+    try:
+        data_raw = request.data.decode('utf-8')
+        gsearch_schema = GsearchConfigSchema()
+        body_dict = gsearch_schema.load(json.loads(data_raw))
+        pass
+    except Exception as e:
+        logging.error(e)
+
+    for query in body_dict['queries']:
         print("Get news from [{}]".format(query))
         # news_cnt += len(results)
 

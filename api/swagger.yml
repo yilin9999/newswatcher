@@ -50,11 +50,13 @@ components:
     GsearchConfig:
       type: object
       required:
-        - query
+        - queries
       properties:
-        query:
-          type: string
-          example: "報導者The Reporter"
+        queries:
+          type: array
+          items:
+            type: string
+          example: ["報導者The Reporter", "ETtoday"]
         start_date:
           type: string
           format: date-time

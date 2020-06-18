@@ -19,6 +19,7 @@ class DevConfig(Config):
 
     STAGE = 'dev'
     MONGO_URI = 'mongodb://david:newsgogogo@localhost:27017/newswatcher'
+    TESTING = True
     # DBNAME = 'newswatcher'
     # MONGODB_SETTINGS = {
     #     'db': 'newswatcher',
