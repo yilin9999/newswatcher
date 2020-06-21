@@ -49,11 +49,10 @@ class GoogleNewsSearch:
                     url_tmp += "&{}={}".format(k, v)
 
             self.url = url_tmp
-            logger.info(self.url)
+            logger.debug(self.url)
         except Exception as e:
             raise e
 
-        print(self.url)
         try:
             self.req = urllib.request.Request(self.url, headers=self.headers)
             self.response = urllib.request.urlopen(self.req)
@@ -87,19 +86,29 @@ class GoogleNewsSearch:
                     tmp_img = ''
                 # self.__texts.append(tmp_text)
                 # self.__links.append(tmp_link)
-                self.results.append({'title': tmp_text, 'media': tmp_media,'date': tmp_date,'desc': tmp_desc, 'link': tmp_link,'img': tmp_img})
+                self.results.append({
+                    'title': tmp_text,
+                    'media': tmp_media,
+                    'date': tmp_date,
+                    'desc': tmp_desc,
+                    'link': tmp_link,
+                    'img': tmp_img})
 
                 if "小時前" in tmp_date:
                     dt_tmp_date = dt.datetime.strptime(tmp_date, "%H 小時前")
                     hours_ago = dt_tmp_date.hour
                     tmp_date = dt.datetime.now() - dt.timedelta(hours=hours_ago)
                     # print("{} hours ago".format(hours_ago))
+                elif "分鐘前" in tmp_date:
+                    dt_tmp_date = dt.datetime.strptime(tmp_date, "%M 分鐘前")
+                    mins_ago = dt_tmp_date.minute
+                    tmp_date = dt.datetime.now() - dt.timedelta(minutes=mins_ago)
                 else:
                     tmp_date = dt.datetime.strptime(tmp_date, "%Y年%m月%d日")
-                print(tmp_media, tmp_date)
+                logger.debug(tmp_media, tmp_date)
             self.response.close()
         except Exception as e:
-            print(e)
+            logger.error(e)
 
         time.sleep(delay)
 

@@ -45,6 +45,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GsearchResult'
+  /storage/mongo:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsList'
+        description: Google search configuration
+        required: true
+      responses:
+        '201':
+          description: Created
 components:
   schemas:
     GsearchConfig:
@@ -59,12 +71,10 @@ components:
           example: ["報導者The Reporter", "ETtoday"]
         start_date:
           type: string
-          format: date-time
-          example: '2020-02-29T00:00:00Z'
+          example: '6/4/2020'
         end_date:
           type: string
-          format: date-time
-          example: '2020-02-29T23:59:59Z'
+          example: '6/5/2020'
     GsearchResp:
       type: object
       required:
@@ -88,3 +98,48 @@ components:
         time_elapsed:
           type: string
           example: '312.3'
+    NewsList:
+      type: object
+      required:
+        - time_elapsed
+        - data_cnt
+        - data
+      properties:
+        time_elapsed:
+          type: number
+          format: float
+          example: 3.05
+        data_cnt:
+          type: integer
+          example: 50
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewsItem'
+    NewsItem:
+      type: object
+      required:
+        - time_elapsed
+        - data_cnt
+        - data
+      properties:
+        title:
+          type: string
+          example: 總舖師與水腳最漫長的寒冬
+        media:
+          type: string
+          example: "報導者The Reporter"
+        date:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+        desc:
+          type: string
+          example: 《報導者》採訪南、北部近10名總舖師
+        link:
+          type: string
+          example: https://www.twreporter.org/
+        img:
+          type: string
+          example: https://encrypted-tbn0.gstatic.com/images?xxx
+

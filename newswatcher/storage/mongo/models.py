@@ -1,7 +1,7 @@
 from newswatcher.database import mgdb
 
 
-class NewsDoc:
+class NewsMongoDoc:
     # title = mgdb.StringField(required=True)
     # media = mgdb.StringField()
     # date = mgdb.StringField()
@@ -25,7 +25,7 @@ class NewsDoc:
     # db.news.createIndex({"media":1}, {unique: false})
 
     def __repr__(self):
-        return '<NewsDoc title:{0}>'.format(self.title)
+        return '<NewsMongoDoc title:{0}>'.format(self.title)
 
     @classmethod
     def insert_one(self, input_dict):
