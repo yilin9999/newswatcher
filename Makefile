@@ -18,6 +18,9 @@ venv:
 run:
 	sh -c ' . venv/bin/activate ; python3 app.py'
 
+docker-up:
+	cd docker && docker-compose up -d
+
 test:
 	@echo $(TAG)Running tests$(END)
 	sh -c ' . venv/bin/activate ; pytest -v tests'
