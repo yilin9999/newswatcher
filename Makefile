@@ -27,6 +27,9 @@ run:
 docker-up:
 	cd docker && docker-compose up -d
 
+docker-down:
+	cd docker && docker-compose down
+
 test:
 	@echo $(TAG)Running tests$(END)
 	poetry run pytest -v tests
