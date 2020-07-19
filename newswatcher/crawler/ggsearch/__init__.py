@@ -58,34 +58,36 @@ class GoogleNewsSearch:
             self.response = urllib.request.urlopen(self.req)
             self.page = self.response.read()
             self.content = Soup(self.page, "html.parser")
-            result = self.content.find_all("div", class_="g")
+            result = self.content.find_all("div", id="search")[0].find_all("g-card")
             for item in result:
                 try:
-                    tmp_text = item.find("h3").text
+                    tmp_text = item.find("div", {"role" : "heading"}).text.replace("\n","")
                 except Exception:
                     tmp_text = ''
                 try:
-                    tmp_link = item.find("h3").find("a").get("href")
+                    tmp_link = item.find("a").get("href")
                 except Exception:
                     tmp_link = ''
                 try:
-                    tmp_media = item.find("h3").findNext('div').find_all("span")[0].text
+                    tmp_media = item.findAll("g-img")[1].parent.text
                 except Exception:
                     tmp_media = ''
                 try:
-                    tmp_date = item.find("h3").findNext('div').find_all("span")[2].text
+                    tmp_date = item.find("div", {"role" : "heading"}).next_sibling.findNext('div').findNext('div').text
                 except Exception:
                     tmp_date = ''
                 try:
-                    tmp_desc = item.find("div", class_="st").text
+                    tmp_desc = item.find("div", {"role" : "heading"}).next_sibling.findNext('div').text.replace("\n","")
                 except Exception:
                     tmp_desc = ''
                 try:
-                    tmp_img = item.find("img").get("src")
+                    tmp_img = item.findAll("g-img")[0].find("img").get("src")
                 except Exception:
                     tmp_img = ''
                 # self.__texts.append(tmp_text)
                 # self.__links.append(tmp_link)
+                # self.__results.append({'title': tmp_text, 'media': tmp_media,'date': tmp_date,'desc': tmp_desc, 'link': tmp_link,'img': tmp_img})
+
                 self.results.append({
                     'title': tmp_text,
                     'media': tmp_media,
@@ -94,7 +96,15 @@ class GoogleNewsSearch:
                     'link': tmp_link,
                     'img': tmp_img})
 
-                if "小時前" in tmp_date:
+                if "週前" in tmp_date:
+                    dt_tmp_date = dt.datetime.strptime(tmp_date, "%d 週前")
+                    weeks_ago = dt_tmp_date.day  # use "day" variable representing weeks
+                    tmp_date = dt.datetime.now() - dt.timedelta(weeks=weeks_ago)
+                elif "天前" in tmp_date:
+                    dt_tmp_date = dt.datetime.strptime(tmp_date, "%d 天前")
+                    days_ago = dt_tmp_date.day
+                    tmp_date = dt.datetime.now() - dt.timedelta(days=days_ago)
+                elif "小時前" in tmp_date:
                     dt_tmp_date = dt.datetime.strptime(tmp_date, "%H 小時前")
                     hours_ago = dt_tmp_date.hour
                     tmp_date = dt.datetime.now() - dt.timedelta(hours=hours_ago)
